@@ -1,5 +1,5 @@
 # LangChain-Chatbot/RagBot
-Ragbot created using Langchain,Chroma db, groq_api and Django to converse with documents in the docs folder.<br />
+Ragbot created using Langchain,Chroma db, groq_api and Django to converse with documents(cuurently supports only pdfs) in the docs folder.<br />
 The docs folder needs to be added along with .env file cntaining GROQ api key.<br />
 Lchain is the venv folder.<br />
 LchainBot is the Django project.<br />
