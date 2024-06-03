@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block styles %}
+<style>
+    body, html {
+      height: 100%;
+    }
+
+    .messages-box {
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .messages-list {
+      padding-left: 0;
+    }
+
+    .message {
+      margin-bottom: 15px;
+      list-style: none;
+    }
+
+    .message-text {
+      padding: 10px;
+      border-radius: 5px;
+    }
+
+    .sent {
+      background-color: #dcf8c6;
+      align-self: flex-end;
+    }
+
+    .received {
+      background-color: #f1f0f0;
+      align-self: flex-start;
+    }
+
+    .message-form {
+      display: flex;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 10px;
+      background-color: #f8f9fa;
+    }
+
+    .message-input {
+      flex: 1;
+      border-radius: 0;
+      border-right: none;
+    }
+
+    .btn-send {
+      border-radius: 0;
+    }
+
+    .chat-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chat-container">
+  <div class="card flex-grow-1">
+    <div class="card-header bg-primary text-white">Chat</div>
+    <div class="card-body messages-box">
+      <ul class="list-unstyled messages-list">
+        <li class="message received">
+          <div class="message-text">
+            <div class="message-sender">
+              <b>AI Chatbot</b>
+            </div>
+            <div class="message-content">
+              Hi, I am your AI Chatbot, you can ask me anything.
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <form class="message-form" id="chat-form">
+    {% csrf_token %}
+    <div class="input-group">
+      <input type="text" class="form-control message-input" placeholder="Type your message..." name="message">
+      <div class="input-group-append">
+        <button type="submit" class="btn btn-primary btn-send">Send</button>
+      </div>
+    </div>
+  </form>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#chat-form').on('submit', function(event) {
+            event.preventDefault();
+            $.ajax({
+                url: "{% url 'ajax_chat' %}",
+                type: "POST",
+                data: $(this).serialize(),
+                success: function(data) {
+                    $('.messages-list').append(
+                        '<li class="message sent"><div class="message-text"><div class="message-sender"><b>You</b></div><div class="message-content">' + data.message + '</div></div></li>'
+                    );
+                    $('.messages-list').append(
+                        '<li class="message received"><div class="message-text"><div class="message-sender"><b>AI Chatbot</b></div><div class="message-content">' + data.response + '</div></div></li>'
+                    );
+                    $('#chat-form')[0].reset();
+                },
+                error: function(xhr, errmsg, err) {
+                    console.log(xhr.status + ": " + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
